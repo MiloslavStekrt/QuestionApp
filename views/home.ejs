@@ -8,7 +8,7 @@
 </head>
 <body>
     <% Quizes !== undefined || Quizes.length != 0  ? Quizes.map( quiz => { %>
-        <a href="quiz/<%= quiz._id %>">
+        <a href="quiz/s/<%= quiz._id %>">
             <h3><%= quiz.name %> - <small><small><%= quiz.author %></small></small></h3>
         </a>
     <% }): "" %>

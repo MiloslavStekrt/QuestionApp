@@ -17,8 +17,9 @@ APP.set("views", __dirname+"/views")
 
 
 // Controllers
-APP.use("/", require("./ser/Home"))
-APP.use("/quiz", require("./ser/Quiz"))
+APP.use("/", require("./ser/Home"));
+APP.use(EXPRESS.static("public"))
+APP.use("/quiz", require("./ser/Quiz"));
 
 
 APP.listen(CONFIG.PORT, () => {

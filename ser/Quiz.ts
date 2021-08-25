@@ -9,7 +9,11 @@ const newUuid = () => {
     return UUID();
 }
 
-router.get('/:id', async (_: Request, s: Response) => {
+router.get('/new', async (_: Request, s: Response) => {
+    return s.render("new-quiz")
+})
+
+router.get('/s/:id', async (_: Request, s: Response) => {
     let quiz = {
         name: "Quiz is not finded",
         questions: [
@@ -24,15 +28,11 @@ router.get('/:id', async (_: Request, s: Response) => {
             question.correct = "Sorry this is secreat for you.";
         })
     } catch (CastError) {
-        s.redirect("/")
+        return s.redirect("/")
     }
     s.render("quiz", {
         quiz: quiz
     })
-})
-
-router.post('/new', async (_: Request, s: Response) => {
-
 })
 
 module.exports = router;
