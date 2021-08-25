@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div>
+            <h3><a href="/"> <- </a><%= quiz.name %> - <sub><%= quiz.author %></sub></h3>
+            <p>{{time}}</p>
+        </div>
+        <div v-if="!running">
+            <button :disabled="start_time > 0" v-on:click="startupit" >Start</button>
+        </div>
+        <div v-else>
+            <h4>{{current.title}}</h4>
+            <div v-for="answer in current.answers">
+                <button v-on:click="addAnswer(answer.uuid)">{{answer.text}}</button>
+            </div>
+        </div>
+        <h1>{{current.title}}</h1>
+    </div>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                name: "<%= quiz.name%>",
+                author: "<%= quiz.author %>",
+                id: "<%= quiz._id %>",
+                questions: <%- quiz.questions %>,
+                current: <%- quiz.questions[0] %>,
+                answers: [],
+                start_time: 0,
+                running: false,
+                counter: 0,
+                time: 0
+            },
+            methods: {
+                startupit: function() {
+                    this.start_time = Date.now();
+                    this.running = true;
+                },
+                addAnswer: function(uuid) {
+                    this.answers.push(uuid);
+                    this.next()
+                },
+                next: function() {
+                    if (this.counter < this.questions.length) {
+                        this.counter++;
+                        this.current = this.questions[this.counter];
+                    } else {
+                        this.running = false;
+                    }
+                },
+                onesecondtimer: function() {
+                    this.time = Math.round((Date.now() - this.start_time)/1000)
+                },
+                quizsave: function() {
+                    localStorage.setItem((this.id).toString(), JSON.stringify({
+                        start_time: this.start_time,
+                        time: this.time,
+                        answers: this.answers
+                    }));
+                }
+            },
+            mounted: function () {
+                const h = JSON.parse(localStorage.getItem(this.id.toString())) || null;
+                if (h != null) {
+                    this.start_time = h.start_time;
+                    this.time = h.time;
+                    this.answers = h.answers
+                }
+
+                window.setInterval(() => {
+                    if (this.running) this.onesecondtimer();
+                    else if(this.start_time > 0) this.quizsave()
+                }, 1000)
+            }
+        })
+    </script>
+</body>
+</html>
